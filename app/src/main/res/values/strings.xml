@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RxSearch</string>
+    <string name="input_keyword">input keyword</string>
+</resources>
