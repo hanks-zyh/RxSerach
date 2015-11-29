@@ -41,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
         final SearchService service = retrofit.create(SearchService.class);
 
         RxTextView.textChanges(et_keyword)
-                // 每150毫秒发射一次事件流， 150毫秒之内的被过滤掉
-                .debounce(150, TimeUnit.MILLISECONDS)
+                // 上面的对 tv_result 的操作需要在主线程
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .debounce(1000, TimeUnit.MILLISECONDS,AndroidSchedulers.mainThread())
                 .filter(new Func1<CharSequence, Boolean>() {
                     @Override public Boolean call(CharSequence charSequence) {
                         // 清空搜索出来的结构
@@ -51,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
                         return charSequence.length() > 0;
                     }
                 })
-                // 上面的对 tv_result 的操作需要在主线程
-                .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<CharSequence, Observable<Data>>() {
                     @Override public Observable<Data> call(CharSequence charSequence) {
                         // 搜索

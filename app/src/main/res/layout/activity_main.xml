@@ -17,6 +17,7 @@
         android:focusable="true">
 
         <EditText
+            android:maxLines="1"
             android:id="@+id/et_keyword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
