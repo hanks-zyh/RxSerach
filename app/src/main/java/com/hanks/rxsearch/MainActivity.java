@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         RxTextView.textChanges(et_keyword)
                 // 上面的对 tv_result 的操作需要在主线程
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .debounce(600, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .filter(new Func1<CharSequence, Boolean>() {
                     @Override public Boolean call(CharSequence charSequence) {
                         // 清空搜索出来的结构
@@ -59,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         return service.searchProdcut("utf-8", charSequence.toString());
                     }
                 })
+//                .retryWhen(new RetryWithConnectivityIncremental(MainActivity.this, 5, 15, TimeUnit.MILLISECONDS))
                 // 网络操作在io线程
                 .subscribeOn(Schedulers.io())
                 //将 data 转换成 ArrayList<ArrayList<String>>
@@ -84,20 +84,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 // 发生错误后不要调用 onError，而是转到 onErrorResumeNext
-                .onErrorResumeNext(new Func1<Throwable, Observable<? extends String>>() {
+                /*.onErrorResumeNext(new Func1<Throwable, Observable<? extends String>>() {
                     @Override public Observable<? extends String> call(Throwable throwable) {
                         return Observable.just("error result");
                     }
-                })
-                //
+                })*/
+
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override public void call(String charSequence) {
                         showpop(charSequence);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override public void call(Throwable throwable) {
-                        Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
                     }
                 });
 
