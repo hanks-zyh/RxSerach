@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         return charSequence.length() > 0;
                     }
                 })
-                .flatMap(new Func1<CharSequence, Observable<Data>>() {
+                .switchMap(new Func1<CharSequence, Observable<Data>>() {
                     @Override public Observable<Data> call(CharSequence charSequence) {
                         // 搜索
                         return service.searchProdcut("utf-8", charSequence.toString());
